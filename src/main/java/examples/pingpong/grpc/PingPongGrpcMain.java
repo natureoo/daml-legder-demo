@@ -31,9 +31,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,7 +55,7 @@ public class PingPongGrpcMain {
         int port = Integer.valueOf(args[1]);
 
         // each party will create this number of initial Ping contracts
-        int numInitialContracts = args.length == 3 ? Integer.valueOf(args[2]) : 10;
+        int numInitialContracts = args.length == 3 ? Integer.valueOf(args[2]) : 1;
 
         // Initialize a plaintext gRPC channel
         ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();

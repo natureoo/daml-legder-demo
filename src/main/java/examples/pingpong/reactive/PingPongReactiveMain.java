@@ -33,8 +33,7 @@ import java.util.stream.Stream;
 
 /**
  * run daml sandbox in plaintext
- * --plaintext
- * daml sandbox /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/.daml/dist/ex-java-bindings-0.0.1-SNAPSHOT.dar --port 7601 --log-level DEBUG
+ * daml sandbox /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/.daml/dist/ex-java-bindings-0.0.1-SNAPSHOT.dar --port 7600 --log-level DEBUG
  *
  * run daml sandbox in secure,
  * daml sandbox /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/.daml/dist/ex-java-bindings-0.0.1-SNAPSHOT.dar --port 7600 --pem /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/src/main/resources/certs/grpcserver.key --crt /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/src/main/resources/certs/grpcserver.crt --cacrt /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/src/main/resources/certs/client-ca.crt --log-level DEBUG
