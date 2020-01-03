@@ -36,7 +36,7 @@ import java.util.stream.Stream;
  * daml sandbox /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/.daml/dist/ex-java-bindings-0.0.1-SNAPSHOT.dar --port 7600 --log-level DEBUG
  *
  * run daml sandbox in secure,
- * daml sandbox /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/.daml/dist/ex-java-bindings-0.0.1-SNAPSHOT.dar --port 7600 --pem /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/src/main/resources/certs/grpcserver.key --crt /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/src/main/resources/certs/grpcserver.crt --cacrt /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/src/main/resources/certs/client-ca.crt --log-level DEBUG
+ * daml sandbox /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/.daml/dist/ex-java-bindings-0.0.1-SNAPSHOT.dar --port 30888 --pem /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/src/main/resources/certs/grpcserver.key --crt /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/src/main/resources/certs/grpcserver.crt --cacrt /Users/chenjian/Documents/chenj/work/workplace/study/daml/daml-legder-demo/src/main/resources/certs/client-ca.crt --log-level DEBUG
  * */
 public class PingPongReactiveMain {
 
@@ -50,16 +50,27 @@ public class PingPongReactiveMain {
     public static final String ALICE = "Alice";
     public static final String BOB = "Bob";
 
-    private static final String trustCertCollectionFilePath = "/certs/ca.crt";
+//    private static final String trustCertCollectionFilePath = File.separator + "certs"+ File.separator + "ca.crt";
+//
+//    private static final String keyCertChainFilePath = File.separator +"certs"+File.separator +"grpcclient.crt";
+//    private static final String keyFilePath = File.separator +"certs"+File.separator +"grpcclient.key";
 
-    private static final String keyCertChainFilePath = "/certs/grpcclient.crt";
-    private static final String keyFilePath = "/certs/grpcclient.key";
+
+    private static  String trustCertCollectionFilePath =  "src/main/resources/certs/ca.crt";
+
+    private static  String keyCertChainFilePath = "src/main/resources/certs/grpcclient.crt";
+    private static  String keyFilePath = "src/main/resources/certs/grpcclient.key";
 
 
     private static DamlLedgerClient getMtlsDamlClient(String host, int port) throws SSLException, URISyntaxException {
-        File trustCertCollectionFile = new File(PingPongReactiveMain.class.getResource(trustCertCollectionFilePath).toURI());
-        File keyCertChainFile = new File(PingPongReactiveMain.class.getResource(keyCertChainFilePath).toURI());
-        File keyFile = new File(PingPongReactiveMain.class.getResource(keyFilePath).toURI());
+//        File trustCertCollectionFile = new File(PingPongReactiveMain.class.getResource(trustCertCollectionFilePath).toURI());
+//        File keyCertChainFile = new File(PingPongReactiveMain.class.getResource(keyCertChainFilePath).toURI());
+//        File keyFile = new File(PingPongReactiveMain.class.getResource(keyFilePath).toURI());
+
+        File trustCertCollectionFile = new File(trustCertCollectionFilePath);
+//        System.out.println("path:" + trustCertCollectionFile.getAbsolutePath());
+        File keyCertChainFile = new File(keyCertChainFilePath);
+        File keyFile = new File(keyFilePath);
         SslContextBuilder sb = GrpcSslContexts.forClient()
                 .keyManager(keyCertChainFile, keyFile)
                 .trustManager(trustCertCollectionFile);
@@ -84,23 +95,36 @@ public class PingPongReactiveMain {
 
         public static void main(String[] args) throws SSLException, URISyntaxException {
         // Extract host and port from arguments
-        if (args.length < 2) {
-            System.err.println("Usage: HOST PORT [NUM_INITIAL_CONTRACTS]");
+        if (args.length < 3) {
+            System.err.println("Usage: HOST PORT TYPE [NUM_INITIAL_CONTRACTS]");
             System.exit(-1);
         }
         String host = args[0];
         int port = Integer.valueOf(args[1]);
+        int type = Integer.valueOf(args[2]);
+
 
         // each party will create this number of initial Ping contracts
-        int numInitialContracts = args.length == 3 ? Integer.valueOf(args[2]) : 1;
+        int numInitialContracts = args.length == 4 ? Integer.valueOf(args[3]) : 1;
 
         // create a client object to access services on the ledger
 
         // Initialize a plaintext gRPC channel
 
+        DamlLedgerClient client = null;
+        if(type == 0)
+            client = getPlainTextDamlClient(host, port);
+        else {
 
-//        DamlLedgerClient client = getMtlsDamlClient(host, port);
-        DamlLedgerClient client = getPlainTextDamlClient(host, port);
+            if(args[3] != null && args[3].length() > 0)
+                trustCertCollectionFilePath = args[3];
+            if(args[4] != null && args[4].length() > 0)
+                keyCertChainFilePath = args[4];
+            if(args[5] != null && args[5].length() > 0)
+                keyFilePath = args[5];
+
+            client = getMtlsDamlClient(host, port);
+        }
 
         // Connects to the ledger and runs initial validation
         client.connect();
@@ -166,6 +190,9 @@ public class PingPongReactiveMain {
                     Instant.EPOCH.plusSeconds(10),
                     Collections.singletonList(createCommand))
                 .blockingGet();
+
+            logger.info("create Contracts sender[{}], receiver[{}], pingIdentifier[{}]", sender, receiver, pingIdentifier.toString());
+
         }
     }
 
