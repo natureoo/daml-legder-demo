@@ -116,11 +116,11 @@ public class PingPongReactiveMain {
             client = getPlainTextDamlClient(host, port);
         else {
 
-            if(args[3] != null && args[3].length() > 0)
+            if(args.length > 3 && args[3] != null && args[3].length() > 0)
                 trustCertCollectionFilePath = args[3];
-            if(args[4] != null && args[4].length() > 0)
+            if(args.length > 3 && args[4] != null && args[4].length() > 0)
                 keyCertChainFilePath = args[4];
-            if(args[5] != null && args[5].length() > 0)
+            if(args.length > 3 && args[5] != null && args[5].length() > 0)
                 keyFilePath = args[5];
 
             client = getMtlsDamlClient(host, port);
